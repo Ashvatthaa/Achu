@@ -1,41 +1,33 @@
 import streamlit as st
 import random
-if 'target_number' not in st.session_state:
-    st.session_state.target_number = random.randint(1,100)
-    
+
+# Set the title of the app
+st.title("Number Guessing Game")
+
+# Initialize session state to store the random number and attempts
+if 'number_to_guess' not in st.session_state:
+    st.session_state.number_to_guess = random.randint(1, 100)
     st.session_state.attempts = 0
 
+# Get user input (a guess)
+guess = st.number_input("Enter your guess (1-100):", min_value=1, max_value=100, step=1)
 
-st.title("User Guessing")
-st.write("Guess the number I'm thinking of between 1 to 100")
+# Button to submit the guess
+if st.button('Submit Guess'):
+    st.session_state.attempts += 1  # Increment the attempts
+    # Check if the guess is correct
+    if guess < st.session_state.number_to_guess:
+        st.write("Your guess is too low! Try again.")
+    elif guess > st.session_state.number_to_guess:
+        st.write("Your guess is too high! Try again.")
+    else:
+        st.write(f"Congratulations! You've guessed the correct number {st.session_state.number_to_guess} in {st.session_state.attempts} attempts.")
+        # Reset the game after guessing correctly
+        if st.button("Play Again"):
+            st.session_state.number_to_guess = random.randint(1, 100)
+            st.session_state.attempts = 0
+            st.write("Game reset! Try again.")
 
-guess = st.number_input("Enter your guess:", min_value=1, max_value=100, step=1)
-
-
-
-if st.button("Submit Guess"):
-    st.session_state.attempts += 1
-    diff = abs(guess - st.session_state.target_number)
-    st.write(diff)
-    
-    if guess == st.session_state.target_number:
-        st.write(f"Congratulations! You guessed it in {st.session_state.attempts} attempts.")
-        st.session_state.target_number = random.randint(1, 100)
-        st.session_state.attempts = 0
-        st.write("New game started! Try to guess the new number.")
-    elif diff <= 10 or diff < 5:
-        if st.session_state.target_number>guess:
-            st.write("That's almost it, just a little more")
-
-        elif guess>st.session_state.target_number:
-            st.write("That's almost it, just a little less")
-
-    elif guess > st.session_state.target_number:
-        st.write("Too high! Try again.")
-
-    elif guess < st.session_state.target_number:
-        st.write("Too low! Try again.")
-
-
-
-st.write("Attempts:",st.session_state.attempts)
+# Show the number of attempts
+if st.session_state.attempts > 0 and guess != st.session_state.number_to_guess:
+    st.write(f"Attempts so far: {st.session_state.attempts}")
